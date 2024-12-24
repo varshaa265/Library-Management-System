@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Manager</title>
+</head>
+<style>
+h1 {
+    text-align: center;
+    color: white;
+    font-weight: bold;
+}
+
+input {
+    margin-right: 10px;
+    color: black;
+    font-weight: bold;
+}
+
+#bookTable {
+    margin-top: 20px;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#bookTable th, #bookTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    color: white;
+    font-weight: bold;
+}
+
+#bookTable th {
+    background-color: #f2f2f2;
+    color: black;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-image: url("/images/book3.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: 1;
+    color: white;
+    font-weight: bold;
+}
+
+label {
+    color: white;
+    font-weight: bold;
+}
+ul{
+float: right;
+list-style-type:none;
+margin-top:25px;
+}
+ul li{
+display: inline-block;
+}
+ul li a{
+text-decoration:none;
+color:#ffffff;
+padding: 5px 20px;
+border: 1px solid transparent;
+transition: 0.6s ease;
+}
+ul li a:hover
+{
+background-color:#ffffff;
+color: #000000;
+}
+h1{
+font: sans-serif;
+position: absolute;
+font-size: 70px;
+top: 50%;
+left: 50%;
+transform: translate(-50%,-50%);
+}
+ul li.active a{
+background-color:#ffffff;
+color: #000000;
+}
+</style>
+<body>
+<header>
+    <h1><b>LIBRARY MANAGEMENT SYSTEM</b></h1>
+    <div class="main">
+        <div class="logo">
+            <ul>
+                <li class="active"><a href="#" onclick="showHome()">Home</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="#" onclick="showAboutUs()">About us</a></li>
+                <li><a href="#" onclick="logout()">Log out</a></li>
+            </ul>
+            <div id="content">
+                <!-- Content will be updated using JavaScript -->
+            </div>
+            <script>
+                function showHome() {
+                    // Replace the content with the Home page content
+                    document.getElementById("content").innerHTML = "<h2>Welcome to Library Management System!</h2><p>This is the home page content.</p>";
+                }
+                
+                function showAboutUs() {
+                    // Redirect to the About page
+                    window.location.href = "about.html";
+                }
+
+                function logout() {
+                    // Logout logic here
+                    alert("You have been logged out.");
+                    showHome(); // Show Home page content after logout
+                }
+
+                // Initial content to show on page load (Home page)
+                showHome();
+            </script>
+        </div>
+    </div>
+</header>
+</body>
+</html>
+
+
+
+
+
+

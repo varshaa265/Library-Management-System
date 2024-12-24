@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .login-container {
+        background-color: #ffffff;
+        border: 1px solid #dddddd;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-input {
+        display: block;
+        margin-bottom: 10px;
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #dddddd;
+        border-radius: 3px;
+    }
+
+    .login-button {
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 3px;
+        padding: 10px 15px;
+        cursor: pointer;
+    }
+</style>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form onsubmit="return false;">
+            <label for="username">Username:</label>
+            <input type="text" id="username" class="login-input" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" class="login-input" required>
+
+            <button onclick="login()" class="login-button">Login</button>
+        </form>
+    </div>
+
+    <script>
+        function login() {
+            // Get input values
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            // Simple validation (replace this with proper server-side authentication)
+            if (username === "admin" && password === "admin123") {
+                alert("Login successful!");
+				window.location.href = "index.html";
+				// You can redirect to another page here
+            } else {
+                alert("Invalid username or password. Please try again.");
+            }
+        }
+    </script>
+</body>
+</html>

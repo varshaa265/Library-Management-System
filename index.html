@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Manager</title>
+</head>
+<style>
+h1 {
+    text-align: center;
+    color: white;
+    font-weight: bold;
+}
+
+input {
+    margin-right: 10px;
+    color: black;
+    font-weight: bold;
+}
+
+#bookTable {
+    margin-top: 20px;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#bookTable th, #bookTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    color: white;
+    font-weight: bold;
+}
+
+#bookTable th {
+    background-color: #f2f2f2;
+    color: black;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-image: url("./images/book3.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: 1;
+    color: white;
+    font-weight: bold;
+}
+
+label {
+    color: white;
+    font-weight: bold;
+}
+
+ul {
+    float: right;
+    list-style-type: none;
+    margin-top: 25px;
+}
+
+ul li {
+    display: inline-block;
+}
+
+ul li a {
+    text-decoration: none;
+    color: #ffffff;
+    padding: 5px 20px;
+    border: 1px solid transparent;
+    transition: 0.6s ease;
+}
+
+ul li a:hover {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+ul li.active a {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* Add styles for the genre dropdown menu */
+.genre-dropdown {
+    margin-top: 10px;
+}
+
+/* Add styles for the book grid */
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 20px;
+}
+
+.book-card {
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #f2f2f2;
+    color: black;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Style for book cover image */
+.book-cover {
+    width: 150px;
+    height: 250px;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+.book-card input[type="number"],
+.book-card textarea {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+</style>
+<body>
+    <h1>Book Manager</h1>
+	
+    <div class="main">
+        <div class="logo">
+            <ul>
+                <li class="active"><a href="#" onclick="logout()">Log out</a></li>
+            </ul>
+        </div>
+    </div>
+	
+
+    <!-- Add a dropdown menu for genres -->
+    <div class="genre-dropdown">
+        <label for="genreSelect">Select Genre:</label>
+        <select id="genreSelect" onchange="filterByGenre()">
+            <option value="all">All Genres</option>
+            <option value="fiction">Fiction</option>
+            <option value="nonfiction">Non-Fiction</option>
+            <option value="classics">Classics</option>
+            <option value="children">Children's Books</option>
+            <option value="mystery">Mystery/Thriller</option>
+            <option value="romance">Romance</option>
+            <option value="fantasy">Fantasy</option>
+            <option value="horror">Horror</option>
+          
+        </select>
+    </div>
+<div class="filters">
+    <label for="minPrice">Min Price:</label>
+    <input type="number" id="minPrice" placeholder="Minimum Price">
+
+    <label for="maxPrice">Max Price:</label>
+    <input type="number" id="maxPrice" placeholder="Maximum Price">
+
+    <label for="startYear">Start Year:</label>
+    <input type="number" id="startYear" placeholder="Start Year">
+
+    <label for="endYear">End Year:</label>
+    <input type="number" id="endYear" placeholder="End Year">
+
+    <button onclick="applyFilters()">Apply Filters</button>
+</div>
+
+    <input type="text" id="searchInput">
+    <button onclick="search()">Search</button>
+
+    <!-- Add a header for popular releases -->
+    <header>
+        <h2>Popular Releases:</h2>
+    </header>
+
+    <!-- Display popular releases in a grid format -->
+    <div class="book-grid" id="popularReleasesGrid"></div>
+	 <div id="selectedBookDetails">
+	 
+	 </div>
+    <script>
+	
+        // Sample book data (replace this with your actual book data)
+        const books = [
+            {
+                title: "The Great Gatsby",
+                author: "F. Scott Fitzgerald",
+                publishedYear: 1925,
+                genre: "classics",
+                coverImage: "/images/great gatsby.jpg",
+				price: 1599
+            },
+            {
+                title: "Gone Girl",
+                author: "Gillian Flynn",
+                publishedYear: 2012,
+                genre: "mystery/thriller",
+                coverImage: "/images/gone-girl.jpg",
+				price: 999
+            },
+			{
+                title: "The Hobbit",
+                author: "J.R.R. Tolkien",
+                publishedYear: 1937,
+                genre: "fantasy",
+                coverImage: "/images/the-hobbit.jpg",
+				price: 1400
+            },
+			{
+                title: "Dune",
+                author: "Frank Herbert",
+                publishedYear: 1965,
+                genre: "science fiction",
+                coverImage: "/images/Dune_.jpg",
+				price: 1099
+            },
+			{
+                title: "Sapiens: A Brief History of Humankind",
+                author: "Yuval Noah Harari",
+                publishedYear: 2011,
+                genre: "Non-Fiction",
+                coverImage: "/images/sapiens.jpg",
+				price: 1290
+            },
+			{
+                title: "Becoming",
+                author: "Michelle Obama",
+                publishedYear: 2018,
+                genre: "Mystery/Thriller",
+                coverImage: "/images/becoming.jpg",
+				price: 999
+            },
+			
+            // Add more books here...
+        ];
+		 const classics = [
+            {
+                title: "The Great Gatsby",
+                author: "F. Scott Fitzgerald",
+                publishedYear: 1925,
+                genre: "classics",
+                coverImage: "/images/great gatsby.jpg",
+				price: 1499
+            },
+            {
+				title: "Pride and Prejudice",
+				author: "Jane Austen",
+				publishedYear: 1813,
+                genre: "classics",
+                coverImage: "/images/pride.jpg",
+				price: 1670
+            },
+			{
+				title: "1984",
+				author: "George Orwell (1949)",
+				publishedYear:1949,
+                genre: "classics",
+                coverImage: "/images/1984-book.jpg",
+				price: 1499
+            },
+			{
+				title: "Jane Eyre",
+				author: "Charlotte Bronte",
+				publishedYear:1847,
+                genre: "classics",
+                coverImage: "/images/jane.jpg",
+				price: 999
+            },
+			{
+				title: "The Picture of Dorian Gray",
+				author: "Oscar Wilde",
+				publishedYear:1890,
+                genre: "classics",
+                coverImage: "/images/pic.jpg",
+				price: 1299
+            },
+			{
+				title: "Great Expectations",
+				author: "Charles Dickens",
+				publishedYear: 1861,
+                genre: "classics",
+                coverImage: "/images/great.jpg",
+				price: 679
+            },
+            // Add more classic books...
+        ];
+		const fiction=
+		[
+			{
+				title: "Harry Potter and the Sorcerer's Stone",
+				author: "J.K. Rowling",
+				publishedYear: 1997,
+                genre: "fiction",
+                coverImage: "/images/harry.jpg",
+				price: 1399
+            },
+			{
+				title: "The Lord of the Rings",
+				author: "J.R.R. Tolkien",
+				publishedYear: 1954,
+                genre: "fiction",
+                coverImage: "/images/lord.jpg",
+				price: 1999
+            },
+			{
+				title: "The Catcher in the Rye",
+				author: "J.D. Salinger",
+				publishedYear: 1951,
+                genre: "fiction",
+                coverImage: "/images/catcher.jpg",
+				price: 1699
+            },
+			{
+				title: "The Alchemist",
+				author: "Paulo Coelho",
+				publishedYear: 1988,
+                genre: "fiction",
+                coverImage: "/images/the.jpg",
+				price: 1799
+            },
+			{
+				title: "The Chronicles of Narnia",
+				author: "C.S. Lewis",
+				publishedYear: 1950,
+                genre: "fiction",
+                coverImage: "/images/cr.jpg",
+				price: 1899
+            },
+			{
+				title: "Brave New World",
+				author: "Aldous Huxley",
+				publishedYear: 1932,
+                genre: "fiction",
+                coverImage: "/images/brave.jpg",
+				price: 2199
+            },
+		];
+		 const nonfiction = [
+            {
+                title: "Sapiens: A Brief History of Humankind",
+                author: "Yuval Noah Harari",
+                publishedYear: 2011,
+                genre: "nonfiction",
+                coverImage: "/images/sapiens.jpg",
+				price: 999
+            },
+			{
+                title: "The Wright Brothers",
+                author: "David McCullough",
+                publishedYear: 2015,
+                genre: "nonfiction",
+                coverImage: "/images/wr.jpg",
+				price: 1569
+            },
+			{
+                title: "The Glass Castle: A Memoir",
+                author: "Jeannette Walls",
+                publishedYear: 2005,
+                genre: "nonfiction",
+                coverImage: "/images/glass.jpg",
+				price: 1199
+            },
+			{
+                title: "Thinking, Fast and Slow",
+                author: "Daniel Kahneman",
+                publishedYear: 2011,
+                genre: "nonfiction",
+                coverImage: "/images/th.jpg",
+				price: 1539
+            },
+			{
+                title: "The Immortal Life of Henrietta Lacks",
+                author: "Rebecca Skloot",
+                publishedYear: 2010,
+                genre: "nonfiction",
+                coverImage: "/images/im.jpg",
+				price: 1990
+            },
+			{
+                title: "When Breath Becomes Air",
+                author: "Paul Kalanithi",
+                publishedYear: 2016,
+                genre: "nonfiction",
+                coverImage: "/images/when.jpg",
+				price: 2199
+            },
+			
+            // Add more nonfiction books...
+        ];
+		const children = [
+            {
+                title: "Harry Potter and the Sorcerer's Stone",
+                author: "J.K. Rowling",
+                publishedYear: 1997,
+                genre: "children",
+                coverImage: "/images/harry.jpg",
+				price: 699
+            },
+			{
+                title: "Winnie-the-Pooh",
+                author: "A.A. Milne",
+                publishedYear: 1926,
+                genre: "children",
+                coverImage: "/images/w.jpg",
+				price: 899
+            },
+			{
+                title: "Matilda",
+                author: "Roald Dahl",
+                publishedYear: 1988,
+                genre: "children",
+                coverImage: "/images/ro.jpg",
+				price: 999
+            },
+			{
+                title: "Green Eggs and Ham",
+                author: "Dr. Seuss",
+                publishedYear: 1960,
+                genre: "children",
+                coverImage: "/images/green.jpg",
+				price: 770
+            },
+			{
+                title: "Goodnight Moon",
+                author: "Margaret Wise Brown",
+                publishedYear: 1947,
+                genre: "children",
+                coverImage: "/images/good.jpg",
+				price: 599
+            },
+			{
+                title: "The Gruffalo",
+                author: "Julia Donaldson",
+                publishedYear: 1999,
+                genre: "children",
+                coverImage: "/images/gru.jpg",
+				price: 779
+            },
+            // Add more children's books...
+        ];
+		 const mystery = [
+            {
+                title: "Gone Girl",
+                author: "Gillian Flynn",
+                publishedYear: 2012,
+                genre: "mystery",
+                coverImage: "/images/gone-girl.jpg",
+				price: 1699
+            },
+			{
+                title: "The Girl with the Dragon Tattoo",
+                author: "Stieg Larsson",
+                publishedYear: 2005,
+                genre: "mystery",
+                coverImage: "/images/dragon.jpg",
+				price: 2099
+            },
+			{
+                title: "The Silent Patient",
+                author: "Alex Michaelides",
+                publishedYear: 2019,
+                genre: "mystery",
+                coverImage: "/images/silent.jpg",
+				price: 2399
+            },
+			{
+                title: "The Girl on the Train",
+                author: "Paula Hawkins",
+                publishedYear: 2015,
+                genre: "mystery",
+                coverImage: "/images/girl.jpg",
+				price: 2299
+            },
+			{
+                title: "And Then There Were None",
+                author: "Agatha Christie",
+                publishedYear: 1939,
+                genre: "mystery",
+                coverImage: "/images/and.jpg",
+				price: 2699
+            },
+			{
+                title: "The Reversal",
+                author: "Michael Connelly",
+                publishedYear: 2010,
+                genre: "mystery",
+                coverImage: "/images/thee.jpg",
+				price: 999
+            },
+			
+            // Add more mystery/thriller books...
+        ];
+
+        const romance = [
+            {
+                title: "It Ends with Us",
+                author: "Colleen Hoover",
+                publishedYear: 2016,
+                genre: "romance",
+                coverImage: "/images/end.jpg",
+				price: 1099
+            },
+			{
+                title: "The Wedding Date",
+                author: "Jasmine Guillory",
+                publishedYear: 2018,
+                genre: "romance",
+                coverImage: "/images/wed.jpg",
+				price: 399
+            },
+			{
+                title: "Red, White & Royal Blue",
+                author: "Casey McQuiston",
+                publishedYear: 2019,
+                genre: "romance",
+                coverImage: "/images/red.jpg",
+				price: 999
+            },
+			{
+                title: "The Rosie Project",
+                author: "Graeme Simsion",
+                publishedYear: 2013,
+                genre: "romance",
+                coverImage: "/images/rosie.jpg",
+				price: 1499
+            },
+			{
+                title: "The Hating Game",
+                author: "Sally Thorne",
+                publishedYear: 2016,
+                genre: "romance",
+                coverImage: "/images/hate.jpg",
+				price: 1299
+            },
+			{
+                title: "The Notebook",
+                author: "Nicholas Sparks",
+                publishedYear: 1996,
+                genre: "romance",
+                coverImage: "/images/note.jpg",
+				price: 679
+            },
+			
+            // Add more romance books...
+        ];
+		 const fantasy = [
+            {
+                title: "The Hobbit",
+                author: "J.R.R. Tolkien",
+                publishedYear: 1937,
+                genre: "fantasy",
+                coverImage: "/images/the-hobbit.jpg",
+				price: 899
+            },
+			{
+                title: "The Final Empire",
+                author: "Michael J. Sullivan",
+                publishedYear: 2008,
+                genre: "fantasy",
+                coverImage: "/images/emp.jpg",
+				price: 879
+            },
+			{
+                title: "The Blade Itself",
+                author: "Joe Abercrombie",
+                publishedYear: 2006,
+                genre: "fantasy",
+                coverImage: "/images/bl.jpg",
+				price: 1429
+            },
+			{
+                title: "The Way of Kings",
+                author: "Brandon Sanderson",
+                publishedYear: 2010,
+                genre: "fantasy",
+                coverImage: "/images/brand.jpg",
+				price: 1399
+            },
+			{
+                title: "The Priory of the Orange Tree",
+                author: "Samantha Shannon",
+                publishedYear: 2019,
+                genre: "fantasy",
+                coverImage: "/images/prio.jpg",
+				price: 1599
+            },
+			{
+                title: "The Name of the Wind",
+                author: "Patrick Rothfuss",
+                publishedYear: 2007,
+                genre: "fantasy",
+                coverImage: "/images/name.jpg",
+				price: 1679
+            },
+            // Add more fantasy books...
+        ];
+
+        const horror = [
+            {
+                title: "Dracula",
+                author: "Bram Stoker",
+                publishedYear: 1897,
+                genre: "horror",
+                coverImage: "/images/dracula.jpg",
+				price: 999
+            },
+			{
+                title: "Frankenstein",
+                author: "Mary Shelley",
+                publishedYear: 1818,
+                genre: "horror",
+                coverImage: "/images/fra.jpg",
+				price: 1769
+            },
+			{
+                title: "The Shining",
+                author: "Stephen King",
+                publishedYear: 1977,
+                genre: "horror",
+                coverImage: "/images/shin.jpg",
+				price: 1449
+            },
+			{
+                title: "It",
+                author: "Stephen King",
+                publishedYear: 1986,
+                genre: "horror",
+                coverImage: "/images/it.jpg",
+				price: 1569
+            },
+			{
+                title: "The Haunting of Hill House",
+                author: "Shirley Jackson",
+                publishedYear: 1959,
+                genre: "horror",
+                coverImage: "/images/haunt.jpg",
+				price: 899
+            },
+			{
+                title: "Psycho",
+                author: "Robert Bloch",
+                publishedYear: 1959,
+                genre: "horror",
+                coverImage: "/images/ps.jpg",
+				price: 799
+            },
+            // Add more horror books...
+        ];
+        // Function to display the popular releases in a grid format
+       function displayPopularReleases(books) {
+    const popularReleasesGrid = document.getElementById("popularReleasesGrid");
+    popularReleasesGrid.innerHTML = ""; // Clear the previous content
+
+    books.forEach(book => {
+        const bookCard = document.createElement("div");
+        bookCard.classList.add("book-card");
+
+        // Create an image element for the book cover
+        const bookCover = document.createElement("img");
+        bookCover.classList.add("book-cover");
+        bookCover.src = book.coverImage;
+        bookCard.appendChild(bookCover);
+
+        // Create elements for other book information (title, author, etc.)
+        const bookTitle = document.createElement("p");
+        bookTitle.textContent = book.title;
+        const bookAuthor = document.createElement("p");
+        bookAuthor.textContent = `by ${book.author}`;
+        const publishedYear = document.createElement("p");
+        publishedYear.textContent = `Published Year: ${book.publishedYear}`;
+        
+        // Create element for the price
+        const bookPrice = document.createElement("p");
+        bookPrice.textContent = `Price: ${book.price}`;
+
+        // Append book information to the book card
+        bookCard.appendChild(bookTitle);
+        bookCard.appendChild(bookAuthor);
+        bookCard.appendChild(publishedYear);
+        bookCard.appendChild(bookPrice);
+
+        // Append the book card to the grid
+        popularReleasesGrid.appendChild(bookCard);
+		 bookCard.addEventListener("click", function () {
+                    displaySelectedBookDetails(book);
+                });
+    });
+}
+
+
+        // Function to search for books by title
+       
+    function search() {
+        const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+        const filteredBooks = books.filter(book => book.title.toLowerCase().includes(searchTerm));
+        const filteredClassics = classics.filter(book => book.title.toLowerCase().includes(searchTerm));
+        const filteredFiction = fiction.filter(book => book.title.toLowerCase().includes(searchTerm));
+        const filteredNonFiction = nonfiction.filter(book => book.title.toLowerCase().includes(searchTerm));
+        const filteredChildren = children.filter(book => book.title.toLowerCase().includes(searchTerm));
+        const filteredMystery = mystery.filter(book => book.title.toLowerCase().includes(searchTerm));
+        const filteredRomance = romance.filter(book => book.title.toLowerCase().includes(searchTerm));
+        const filteredFantasy = fantasy.filter(book => book.title.toLowerCase().includes(searchTerm));
+        const filteredHorror = horror.filter(book => book.title.toLowerCase().includes(searchTerm));
+
+        // Merge all filtered book arrays into one array
+        const allFilteredBooks = [
+            ...filteredBooks,
+            ...filteredClassics,
+            ...filteredFiction,
+            ...filteredNonFiction,
+            ...filteredChildren,
+            ...filteredMystery,
+            ...filteredRomance,
+            ...filteredFantasy,
+            ...filteredHorror,
+        ];
+
+        displayPopularReleases(allFilteredBooks);
+    }
+
+
+
+        // Function to filter books by genre
+        function filterByGenre() {
+    const selectedGenre = document.getElementById("genreSelect").value;
+
+    // Check the selected genre and display books accordingly
+    if (selectedGenre === "all") {
+        displayPopularReleases(books); // Display all books
+    } else if (selectedGenre === "classics") {
+        displayAllClassics(); // Display all classics
+    } else if (selectedGenre === "fiction") {
+        displayAllFiction(); // Display all fiction books
+    } else if (selectedGenre === "nonfiction") {
+        displayAllNonFiction(); // Display all non-fiction books
+    } else if (selectedGenre === "children") {
+        displayAllChildrenBooks(); // Display all children's books
+    } else if (selectedGenre === "mystery") {
+        displayAllMysteryBooks(); // Display all mystery/thriller books
+    } else if (selectedGenre === "romance") {
+        displayAllRomanceBooks(); // Display all romance books
+    } else if (selectedGenre === "fantasy") {
+        displayAllFantasyBooks(); // Display all fantasy books
+    } else if (selectedGenre === "horror") {
+        displayAllHorrorBooks(); // Display all horror books
+    } else {
+        // If the selected genre is not found in the predefined genres, display all books.
+        displayPopularReleases(books);
+    }
+}
+
+    
+
+        // Attach the search function to the "keyup" event of the input field
+        document.getElementById("searchInput").addEventListener("keyup", search);
+
+        // Initial display of popular releases
+        displayPopularReleases(books);
+		  function displaySelectedBookDetails(book) {
+    const selectedBookDetails = document.getElementById("selectedBookDetails");
+    selectedBookDetails.innerHTML = ""; // Clear the previous content
+
+    if (book) {
+        // Create a paragraph to display book details
+        const bookDetails = document.createElement("p");
+        bookDetails.textContent = `${book.title} by ${book.author} (Published Year: ${book.publishedYear})`;
+        selectedBookDetails.appendChild(bookDetails);
+
+        // Create textarea for review
+        const reviewTextarea = document.createElement("textarea");
+        reviewTextarea.placeholder = "Write your review here";
+        reviewTextarea.rows = 4;
+
+        // Check if the book already has a review saved and display it in the textarea
+        if (book.review) {
+            reviewTextarea.value = book.review;
+        }
+
+        // Create a button to save the review details
+        const saveButton = document.createElement("button");
+saveButton.textContent = "Save Review";
+saveButton.onclick = function () {
+    const review = reviewTextarea.value;
+    const bookName = book.title; // Assuming the book object has a "title" property
+    const reviewData = { bookName, review }; // Create the review data object
+    
+    // Make a POST request to the backend to save the review
+    fetch('http://localhost:3000/api/reviews', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(reviewData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(`Review for ${bookName} saved successfully!`);
+        console.log(data.message); // Log the response message from the server
+    })
+    .catch(error => {
+        console.error('Error saving review:', error);
+    });
+};
+
+
+        // Append book details, textarea, and button to the selectedBookDetails div
+        selectedBookDetails.appendChild(bookDetails);
+        selectedBookDetails.appendChild(reviewTextarea);
+        selectedBookDetails.appendChild(saveButton);
+    }
+}
+
+		  function attachClickEventToBooks() {
+            const bookCards = document.querySelectorAll(".book-card");
+            bookCards.forEach(bookCard => {
+                bookCard.addEventListener("click", function () {
+                    const bookTitle = this.querySelector("p").textContent;
+                    const selectedBook = books.find(book => book.title === bookTitle);
+                    displaySelectedBookDetails(selectedBook);
+                });
+            });
+        }
+		 displayPopularReleases(books);
+		 
+	function applyFilters() {
+            const minPrice = parseInt(document.getElementById("minPrice").value);
+            const maxPrice = parseInt(document.getElementById("maxPrice").value);
+            const startYear = parseInt(document.getElementById("startYear").value);
+            const endYear = parseInt(document.getElementById("endYear").value);
+
+            // Filter books based on price and publishing year from all genres combined
+            const allBooks = [...books, ...classics, ...fiction, ...nonfiction, ...children, ...mystery, ...romance, ...fantasy, ...horror];
+            const filteredBooks = allBooks.filter(book => {
+                const isInPriceRange = (minPrice <= book.price) && (book.price <= maxPrice);
+                const isInPublishingYearRange = (startYear <= book.publishedYear) && (book.publishedYear <= endYear);
+                return isInPriceRange && isInPublishingYearRange;
+            });
+
+            displayPopularReleases(filteredBooks);
+        }
+
+        // (Existing code for other functions)
+
+        // Initial display of popular releases
+        displayPopularReleases(books);
+
+        // Attach click event to the books
+        attachClickEventToBooks();
+	function displayAllClassics() {
+        displayPopularReleases(classics);
+    }
+	function displayAllFiction()
+	{
+		displayPopularReleases(fiction);
+	}
+	function displayAllNonFiction() {
+            displayPopularReleases(nonfiction, nonfiction);
+        }
+
+        function displayAllChildrenBooks() {
+            displayPopularReleases(children, children);
+        }
+
+        function displayAllMysteryBooks() {
+            displayPopularReleases(mystery, mystery);
+        }
+
+        function displayAllRomanceBooks() {
+            displayPopularReleases(romance, romance);
+        }
+		function displayAllFantasyBooks() {
+           displayPopularReleases(fantasy, fantasy);
+        }
+
+        function displayAllHorrorBooks() {
+            displayPopularReleases(horror, horror);
+        }
+		document.getElementById("searchInput").addEventListener("keyup", search);
+
+        // Initial display of popular releases
+        displayPopularReleases(books);
+        // Function for logout
+        function logout() {
+            // Add your logout logic here (e.g., clearing session data, redirecting to the login page, etc.)
+            alert("You have been logged out.");
+            window.location.href = "catalog.html"; // Replace with the URL of the login page
+        }
+    </script>
+</body>
+</html>
